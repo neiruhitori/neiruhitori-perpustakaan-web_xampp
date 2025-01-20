@@ -55,7 +55,7 @@ class BukucrudController extends Controller
             'penulis' => 'required|min:1|max:50',
             'penerbit' => 'required|min:1|max:50',
             'stok' => 'required:true',
-            'foto' => 'required|mimes:jpg,jpeg,png|max:2048', // Maksimal 2MB
+            // 'foto' => 'required|mimes:jpg,jpeg,png|max:2048', // Maksimal 2MB
         ]);
 
         $data = Bukucrud::create($request->all());

@@ -64,11 +64,11 @@
                             </div>
                             <div class="col-md-6">
                                 <label>Deskripsi :</label>
-                                <textarea type="text" class="form-control" disabled>{{ $peminjaman->bukusharians->description }}</textarea>
+                                <textarea type="text" class="form-control" disabled>{{ $peminjaman->description }}</textarea>
                             </div>
                             <div class="col-md-6">
                                 <label>Kode Buku :</label>
-                                <input type="text" class="form-control" id="kodebuku" name="kodebuku"
+                                <input type="text" class="form-control"  name="kodebuku"
                                     value="{{ $peminjaman->kodebuku }}" disabled/>
                             </div>
                             <div class="col-md-6">

@@ -50,7 +50,8 @@ class BukuHarianController extends Controller
         $profile = User::where('id', $iduser)->first();
 
         $bukuharian = Bukusharian::all();
-        return view('bukuharian.create', compact('bukuharian', 'profile'));
+        $kodebukuharian = KodebukuHarian::all();
+        return view('bukuharian.create', compact('bukuharian', 'kodebukuharian', 'profile'));
     }
 
     /**
@@ -61,57 +62,42 @@ class BukuHarianController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi untuk data buku dan kode buku
         $this->validate($request, [
             'buku' => 'required|min:1|max:50',
             'penulis' => 'required|min:1|max:50',
             'penerbit' => 'required|min:1|max:50',
             'stok' => 'required:true',
-            'foto' => 'required|mimes:jpg,jpeg,png|max:2048', // Maksimal 2MB
-        ]);
-
-        $data = Bukusharian::create($request->all());
-
-        if ($request->hasFile('foto')) {
-            $request->file('foto')->move('gambarbukuharian/', $request->file('foto')->getClientOriginalName());
-            $data->foto = $request->file('foto')->getClientOriginalName();
-            $data->save();
-        }
-        return redirect()->route('bukuharian.createkodebukuharian')->with('success', 'Data Berhasil di Tambahkan');
-        // return redirect('/bukuharian')->with('success', 'Data Berhasil di Tambahkan');
-    }
-
-    public function createkodebukuharian()
-    {
-        $iduser = Auth::id();
-        $profile = User::where('id', $iduser)->first();
-
-        $kodebukuharian = KodebukuHarian::all();
-        $bukuharian = Bukusharian::all();
-        return view('bukuharian.createkodebukuharian', compact('kodebukuharian', 'bukuharian', 'profile'));
-    }
-    public function createkodebukuharianstore(Request $request)
-    {
-        $this->validate($request, [
-            'bukuharian_id' => 'required|array',
-            'bukuharian_id.*' => 'required|exists:bukusharians,id',
             'kodebuku' => 'required|array',
             'kodebuku.*' => 'required|string|distinct',
+            // 'foto' => 'required|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Loop melalui input array untuk menyimpan setiap kode buku
-        foreach ($request->bukuharian_id as $index => $bukuharian_id) {
-            // Pastikan kodebuku sesuai dengan urutan bukuharian_id
-            $kodebuku = $request->kodebuku[$index];
+        // Simpan data buku harian
+        $bukuharian = Bukusharian::create([
+            'buku' => $request->buku,
+            'penulis' => $request->penulis,
+            'penerbit' => $request->penerbit,
+            'stok' => $request->stok,
+        ]);
 
+        // Handle upload foto jika ada
+        if ($request->hasFile('foto')) {
+            $request->file('foto')->move('gambarbukuharian/', $request->file('foto')->getClientOriginalName());
+            $bukuharian->foto = $request->file('foto')->getClientOriginalName();
+            $bukuharian->save();
+        }
+
+        // Simpan kode buku
+        foreach ($request->kodebuku as $kodebuku) {
             KodebukuHarian::create([
-                'bukuharian_id' => $bukuharian_id,
+                'bukuharian_id' => $bukuharian->id,
                 'kodebuku' => $kodebuku,
             ]);
         }
 
-        return redirect('/bukuharian')->with('success', 'Data Berhasil Ditambahkan');
+        return redirect('/bukuharian')->with('success', 'Data Buku dan Kode Buku Berhasil Ditambahkan');
     }
-
 
     /**
      * Display the specified resource.

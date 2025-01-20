@@ -42,6 +42,21 @@
                         </div>
                         <div class="row" id="res"></div>
                         <div class="row mt-2">
+                            <!-- Informasi Peminjam -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Siswa</label>
+                                    <select id="siswa_id" name="siswas_id" class="form-control" required>
+                                        <option value="">Pilih Siswa</option>
+                                        @foreach ($siswa as $siswaa)
+                                            <option value="{{ $siswaa->id }}"
+                                                {{ $peminjaman->siswas_id == $siswaa->id ? 'selected' : '' }}>
+                                                {{ $siswaa->nisn }} - {{ $siswaa->name }} - {{ $siswaa->kelas }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                             {{-- <div class="col-md-6">
                                 <label>Nama :</label>
                                 <input type="text" class="form-control" name="name"
@@ -84,16 +99,16 @@
                                     <option>IX G</option>
                                 </select>
                             </div> --}}
+                            <!-- Buku dropdown -->
                             <div class="col-md-6">
-                                <label for="inputStatus">Buku :</label>
-                                @error('buku')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                                <select id="bukuharian" name="bukusharians_id" class="form-control">
-                                    <option selected disabled>{{ $peminjaman->bukusharians->buku }}</option>
+                                <label>Buku</label>
+                                <select id="bukuharian" name="bukusharians_id" class="form-control" required>
+                                    <option value="">Pilih Buku</option>
                                     @foreach ($bukuharian as $sw)
                                         <option value="{{ $sw->id }}"
-                                            @if ($sw->stok <= 0) disabled @endif>{{ $sw->buku }}
+                                            {{ $peminjaman->bukusharians_id == $sw->id ? 'selected' : '' }}
+                                            @if ($sw->stok <= 0) disabled @endif>
+                                            {{ $sw->buku }}
                                             @if ($sw->stok <= 0)
                                                 (Stok Habis)
                                             @endif
@@ -101,22 +116,18 @@
                                     @endforeach
                                 </select>
                             </div>
-                            {{-- <div class="col-md-6">
-                                <label>Buku :</label>
-                                <input type="text" class="form-control" id="buku" name="buku"
-                                    value="{{ $peminjaman->buku }}" />
-                            </div> --}}
+
+                            <!-- Kode Buku dropdown -->
                             <div class="col-md-6">
-                                <label>Kode Buku :</label>
-                                @error('kodebuku')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                                <select id="kodebuku" name="kodebuku" class="form-control">
-                                    <option selected disabled>{{ $peminjaman->kodebuku }}</option>
+                                <label>Kode Buku</label>
+                                <select id="kodebuku" name="kodebuku" class="form-control" required>
+                                    <option value="">Pilih Kode Buku</option>
                                     @foreach ($bukuharian as $buku)
                                         @foreach ($buku->kodebukuharians as $kode)
-                                            <option value="{{ $kode->kodebuku }}">{{ $buku->buku }} -
-                                                {{ $kode->kodebuku }}</option>
+                                            <option value="{{ $kode->kodebuku }}"
+                                                {{ $peminjaman->kodebuku == $kode->kodebuku ? 'selected' : '' }}>
+                                                {{ $buku->buku }} - {{ $kode->kodebuku }}
+                                            </option>
                                         @endforeach
                                     @endforeach
                                 </select>
@@ -126,30 +137,17 @@
                                 <input type="number" class="form-control" id="jml_buku" name="jml_buku"
                                     value="{{ old('jml_buku', $peminjaman->jml_buku) }}" autocomplete="off" />
                             </div>
-                            <!-- Date and time -->
-                            <div class="form-group">
-                                <label>Jam Pinjam :</label>
-                                <div class="input-group date" id="reservationdatetime" data-target-input="nearest">
-                                    <input type="datetime-local" name="jam_pinjam" class="form-control datetimepicker-input"
-                                        data-target="#reservationdatetime" value="{{ old('jam_pinjam', $peminjaman->jam_pinjam) }}"
-                                        autocomplete="off" />
-                                    <div class="input-group-append" data-target="#reservationdatetime"
-                                        data-toggle="datetimepicker">
-                                    </div>
-                                </div>
+
+                            <!-- Datetime inputs -->
+                            <div class="col-md-6">
+                                <label>Jam Pinjam</label>
+                                <input type="datetime-local" name="jam_pinjam" class="form-control"
+                                    value="{{ date('Y-m-d\TH:i', strtotime($peminjaman->jam_pinjam)) }}" required />
                             </div>
-                            <!-- /.form group -->
-                            <!-- Date and time -->
-                            <div class="form-group">
-                                <label>Jam Kembali :</label>
-                                <div class="input-group date" id="reservationdatetime" data-target-input="nearest">
-                                    <input type="datetime-local" name="jam_kembali"
-                                        class="form-control datetimepicker-input" data-target="#reservationdatetime"
-                                        value="{{ old('jam_kembali', $peminjaman->jam_kembali) }}" autocomplete="off" />
-                                    <div class="input-group-append" data-target="#reservationdatetime"
-                                        data-toggle="datetimepicker">
-                                    </div>
-                                </div>
+                            <div class="col-md-6">
+                                <label>Jam Kembali</label>
+                                <input type="datetime-local" name="jam_kembali" class="form-control"
+                                    value="{{ date('Y-m-d\TH:i', strtotime($peminjaman->jam_kembali)) }}" required />
                             </div>
                             <!-- /.form group -->
                             {{-- <div class="col-md-6">

@@ -37,6 +37,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
+
+    <!--CSS-->
+    <style>
+        .text-red {
+            color: #dc3545 !important;
+        }
+    </style>
 </head>
 
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
@@ -85,26 +92,36 @@
                 </div>
             </div>
             <div class="card-body">
+                <!-- pengembaliantahunan/index.blade.php -->
                 <table id="example1" class="table table-bordered table-striped">
-                    <tr>
-                        <th>No</th>
-                        <th>Kode Pinjam</th>
-                        <th>Nama</th>
-                        <th>Kelas</th>
-                        <th>Buku</th>
-                        <th>Jumlah Buku</th>
-                        <th>Kode Buku</th>
-                        <th>Tanggal Kembali</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Buku</th>
+                            <th>Jumlah Buku</th>
+                            <th>Kode Buku</th>
+                            <th>Tanggal Kembali</th>
+                            <th>Status</th>
+                            <th>Denda</th>
+                            <th>Aksi</th>
+                        </tr>
                     </thead>
                     <tbody>
                         @forelse ($pengembaliantahunan as $k)
                             @if ($pengembaliantahunan->count() > 0)
+                                @php
+                                    $isOverdue =
+                                        \Carbon\Carbon::now()->gt(\Carbon\Carbon::parse($k->jam_kembali)) &&
+                                        $k->status != 0;
+                                    $lateYears = $isOverdue
+                                        ? \Carbon\Carbon::now()->diffInYears(\Carbon\Carbon::parse($k->jam_kembali))
+                                        : 0;
+                                    $lateFine = $lateYears * 50000; // Denda per tahun Rp 50.000
+                                @endphp
                                 <tr>
                                     <td scope="row">{{ $loop->iteration }}</td>
-                                    <td>{{ $k->kode_pinjam }}</td>
                                     <td>{{ optional($k->siswas)->name }}</td>
                                     <td>{{ optional($k->siswas)->kelas }}</td>
                                     <td>
@@ -128,26 +145,15 @@
                                             </ul>
                                         @endforeach
                                     </td>
-                                    {{-- Dibawah Ini adalah Logika untuk membuat text pada jam_kembali berwarna merah jika melebihi batas tanggal --}}
-                                    @php
-                                        $isOverdue =
-                                            \Carbon\Carbon::now()->gt(\Carbon\Carbon::parse($k->jam_kembali)) &&
-                                            $k->status != 0;
-                                    @endphp
                                     <td class="{{ $isOverdue ? 'text-red' : '' }}">
-                                        {{ $k->jam_kembali }}
+                                        {{ \Carbon\Carbon::parse($k->jam_kembali)->format('d-m-Y') }}
                                     </td>
-                                    {{-- =========================================================================================================== --}}
-                                    {{-- <td>
-                                        <label
-                                            class="label {{ $k->status == 1 ? 'badge bg-danger' : 'badge bg-success' }}">{{ $k->status == 1 ? 'Sedang Meminjam' : 'Selesai' }}</label>
-                                    </td> --}}
                                     <td>
                                         <label
                                             class="label 
-                                                @if ($k->status == 0) badge bg-success 
-                                                @elseif ($k->status == 1) badge bg-danger 
-                                                @else badge bg-warning @endif">
+                            @if ($k->status == 0) badge bg-success 
+                            @elseif ($k->status == 1) badge bg-danger 
+                            @else badge bg-warning @endif">
                                             @if ($k->status == 0)
                                                 Selesai
                                             @elseif ($k->status == 1)
@@ -158,26 +164,73 @@
                                         </label>
                                     </td>
                                     <td>
+                                        @if ($k->description)
+                                            <span class="text-danger">{{ $k->description }}</span>
+                                        @elseif($isOverdue)
+                                            <span class="text-danger">Estimasi denda: Rp
+                                                {{ number_format($lateFine, 0, ',', '.') }}</span>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
                                         <div class="btn-group" role="group" aria-label="close">
                                             @if ($k->status == 1 || $k->status == 2)
-                                                <!-- Tanpa Modal -->
-                                                <a href="{{ route('pengembaliantahunan.status', $k->id) }}"
-                                                    class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Harap periksa terlebih dahulu kelengkapan buku dan kondisi buku sebelum proses pengembalian selesai!')">Selesai</a>
-                                                <!-- Tanpa Modal End -->
-                                            @else
-                                                {{-- <a href="" class="btn btn-sm btn-success">Meminjam</a> --}}
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#returnModal{{ $k->id }}">
+                                                    Selesai
+                                                </button>
                                             @endif
                                         </div>
-                                        {{-- <div class="btn-group" role="group" aria-label="Basic example">
-                                            <form action="{{ route('pengembaliantahunan.destroy', $k->id) }}" method="POST"
-                                                type="button" class="btn btn-danger p-0"
-                                                onsubmit="return confirm('Delete?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-danger m-0"><i class="fas fa-trash"></i></button>
-                                            </form>
-                                        </div> --}}
+
+                                        <!-- Modal Pengembalian -->
+                                        <div class="modal fade" id="returnModal{{ $k->id }}" tabindex="-1"
+                                            aria-labelledby="returnModalLabel{{ $k->id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="returnModalLabel{{ $k->id }}">
+                                                            Konfirmasi Pengembalian
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <form action="{{ route('pengembaliantahunan.status', $k->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="modal-body">
+                                                            <p>Harap periksa kelengkapan dan kondisi buku sebelum proses
+                                                                pengembalian.</p>
+
+                                                            @if ($isOverdue)
+                                                                <div class="alert alert-warning">
+                                                                    <p>Buku terlambat {{ $lateYears }} tahun</p>
+                                                                    <p>Denda keterlambatan: Rp
+                                                                        {{ number_format($lateFine, 0, ',', '.') }}</p>
+                                                                </div>
+                                                            @endif
+
+                                                            <div class="form-check mb-3">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    name="is_damaged" id="isDamaged{{ $k->id }}">
+                                                                <label class="form-check-label"
+                                                                    for="isDamaged{{ $k->id }}">
+                                                                    Buku rusak atau hilang (Denda Rp 100.000)
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Batal</button>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                Proses Pengembalian
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endif
@@ -188,10 +241,9 @@
                         @endforelse
                     </tbody>
                 </table>
-            @endsection
-        </div>
+            </div>
 
-</body>
+    </body>
 
 
-</html>
+    </html>

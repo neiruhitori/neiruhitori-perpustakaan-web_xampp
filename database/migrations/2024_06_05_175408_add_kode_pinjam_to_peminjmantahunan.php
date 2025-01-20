@@ -13,9 +13,9 @@ class AddKodePinjamToPeminjmantahunan extends Migration
      */
     public function up()
     {
-        Schema::table('peminjamantahunan', function (Blueprint $table) {
-            $table->string('kode_pinjam')->after('id');
-        });
+        // Schema::table('peminjamantahunan', function (Blueprint $table) {
+        //     $table->string('kode_pinjam')->after('id');
+        // });
     }
 
     /**
@@ -25,8 +25,8 @@ class AddKodePinjamToPeminjmantahunan extends Migration
      */
     public function down()
     {
-        Schema::table('peminjamantahunan', function (Blueprint $table) {
-            $table->dropColumn('kode_pinjam');
-        });
+        // Schema::table('peminjamantahunan', function (Blueprint $table) {
+        //     $table->dropColumn('kode_pinjam');
+        // });
     }
 }

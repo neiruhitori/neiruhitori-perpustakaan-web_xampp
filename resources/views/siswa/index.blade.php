@@ -66,6 +66,39 @@
                         Reset
                     </button>
 
+                    <button type="button" class="btn btn-success float-sm-right" data-bs-toggle="modal"
+                        data-bs-target="#importModal">
+                        Import Excel
+                    </button>
+                    <!-- Modal Import -->
+                    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="importModalLabel">Import Data Siswa</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('siswa.import') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="form-group">
+                                            <label for="file">Pilih File Excel</label>
+                                            <input type="file" class="form-control" name="file" id="file"
+                                                required>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Tutup</button>
+                                            <button type="submit" class="btn btn-primary">Import</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
@@ -91,15 +124,37 @@
                     </div>
 
                     <!-- /.content-header -->
-                    <div class="col-md-7 mt-2 float-sm-right">
+                    <div class="alert col-md-7 mt-2 float-sm-right">
                         @if (Session::has('removeAll'))
                             <div class="btn btn-success swalDefaultSuccess" role="alert">
                                 {{ Session::get('removeAll') }}
                             </div>
                         @endif
-                        @if (Session::has('success'))
+                        @if (session('success'))
                             <div class="btn btn-success swalDefaultSuccess" role="alert">
-                                {{ Session::get('success') }}
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="btn btn-danger swalDefaultSuccess" role="alert">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if (session('warning'))
+                            <div class="btn btn-warning swalDefaultSuccess" role="alert">
+                                {{ session('warning') }}
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="btn btn-danger swalDefaultSuccess" role="alert">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
                         @endif
                     </div>
@@ -130,6 +185,7 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <tr>
                         <th>No</th>
+                        <th>NISN</th>
                         <th>Nama</th>
                         <th>Kelas</th>
                         <th>Aksi</th>
@@ -140,6 +196,7 @@
                             @if ($siswa->count() > 0)
                                 <tr>
                                     <td scope="row">{{ $siswa->firstItem() + $key }}</td>
+                                    <td>{{ $p->nisn }}</td>
                                     <td>{{ $p->name }}</td>
                                     <td>{{ $p->kelas }}</td>
                                     <td>
@@ -183,5 +240,18 @@
         </div>
 
 </body>
+<script>
+    // Otomatis menghilangkan alert setelah 5 detik
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                // Gunakan Bootstrap dismiss
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000); // 5000ms = 5 detik
+    });
+</script>
 
 </html>

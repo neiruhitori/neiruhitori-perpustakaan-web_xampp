@@ -41,6 +41,11 @@
                         <div class="row" id="res"></div>
                         <div class="row mt-2">
                             <div class="col-md-6">
+                                <label>NISN :</label>
+                                <input type="text" class="form-control" name="nisn"
+                                    value="{{ $siswa->nisn }}" autocomplete="off"/>
+                            </div>
+                            <div class="col-md-6">
                                 <label>Nama :</label>
                                 <input type="text" class="form-control" name="name"
                                     value="{{ $siswa->name }}" autocomplete="off"/>

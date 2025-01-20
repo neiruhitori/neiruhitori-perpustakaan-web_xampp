@@ -53,7 +53,7 @@
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="/dashboard">Beranda</a></li>
-                                <li class="breadcrumb-item active">Peminjaman</li>
+                                <li class="breadcrumb-item active">Peminjaman Tahunan</li>
                             </ol>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
@@ -89,15 +89,37 @@
                     </div>
 
                     <!-- /.content-header -->
-                    <div class="col-md-7 mt-2 float-sm-right">
+                    <div class="alert col-md-7 mt-2 float-sm-right">
                         @if (Session::has('removeAll'))
                             <div class="btn btn-success swalDefaultSuccess" role="alert">
                                 {{ Session::get('removeAll') }}
                             </div>
                         @endif
-                        @if (Session::has('success'))
+                        @if (session('success'))
                             <div class="btn btn-success swalDefaultSuccess" role="alert">
-                                {{ Session::get('success') }}
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="btn btn-danger swalDefaultSuccess" role="alert">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if (session('warning'))
+                            <div class="btn btn-warning swalDefaultSuccess" role="alert">
+                                {{ session('warning') }}
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="btn btn-danger swalDefaultSuccess" role="alert">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
                         @endif
                     </div>
@@ -106,7 +128,7 @@
                         <div class="input-group">
                             <div class="form-outline" data-mdb-input-init>
                                 <input type="search" name="search" id="form1" class="form-control"
-                                    placeholder="Cari Nama atau Kelas" autocomplete="off" />
+                                    placeholder="Cari Nama/ Kelas/ NISN" autocomplete="off" />
                             </div>
                             <button type="submit" class="btn btn-primary" data-mdb-ripple-init>
                                 <i class="fas fa-search"></i>
@@ -117,10 +139,6 @@
                         <a href="{{ route('peminjamantahunan.create') }}" class="btn btn-success  float-sm-right"
                             type="button">
                             <i class="fas fa-plus"></i> Buat Pinjaman
-                        </a>
-                        <a href="{{ route('peminjamantahunanbuku.create') }}" class="btn btn-primary  float-sm-right"
-                            type="button">
-                            <i class="fas fa-plus"></i> Tambah Buku
                         </a>
                     </div>
                 </div><!-- /.container-fluid -->
@@ -133,7 +151,7 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <tr>
                         <th>No</th>
-                        <th>Kode Pinjam</th>
+                        <th>NISN</th>
                         <th>Nama</th>
                         <th>Kelas</th>
                         <th>Buku</th>
@@ -149,7 +167,7 @@
                             @if ($peminjamantahunan->count() > 0)
                                 <tr>
                                     <td scope="row">{{ $loop->iteration }}</td>
-                                    <td>{{ $p->kode_pinjam }}</td>
+                                    <td>{{ optional($p->siswas)->nisn }}</td>
                                     <td>{{ optional($p->siswas)->name }}</td>
                                     <td>{{ optional($p->siswas)->kelas }}</td>
                                     <td>
@@ -225,5 +243,18 @@
         </div>
 
 </body>
+<script>
+    // Otomatis menghilangkan alert setelah 5 detik
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                // Gunakan Bootstrap dismiss
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000); // 5000ms = 5 detik
+    });
+</script>
 
 </html>

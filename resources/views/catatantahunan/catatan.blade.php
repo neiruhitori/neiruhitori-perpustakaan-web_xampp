@@ -56,11 +56,40 @@
                     </div><!-- /.row -->
 
                     <!-- /.content-header -->
-                    @if (Session::has('success'))
-                        <div class="btn btn-success swalDefaultSuccess" role="alert">
-                            {{ Session::get('success') }}
-                        </div>
-                    @endif
+                    <div class="alert col-md-7 mt-2 float-sm-right">
+                        @if (Session::has('removeAll'))
+                            <div class="btn btn-success swalDefaultSuccess" role="alert">
+                                {{ Session::get('removeAll') }}
+                            </div>
+                        @endif
+                        @if (session('success'))
+                            <div class="btn btn-success swalDefaultSuccess" role="alert">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="btn btn-danger swalDefaultSuccess" role="alert">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if (session('warning'))
+                            <div class="btn btn-warning swalDefaultSuccess" role="alert">
+                                {{ session('warning') }}
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="btn btn-danger swalDefaultSuccess" role="alert">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
                     {{-- <a href="{{ route('peminjaman.create') }}" class="btn btn-primary breadcrumb float-sm-right">Add
                         Catatan</a> --}}
 
@@ -119,5 +148,18 @@
             @endsection
         </div>
 </body>
+<script>
+    // Otomatis menghilangkan alert setelah 5 detik
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                // Gunakan Bootstrap dismiss
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000); // 5000ms = 5 detik
+    });
+</script>
 
 </html>

@@ -115,6 +115,10 @@ Route::middleware('auth')->group(function () {
         Route::put('edit/{id}', 'update')->name('siswa.update');
         Route::delete('destroy/{id}', 'destroy')->name('siswa.destroy');
         Route::get('removeAll', 'removeAll')->name('siswa.removeAll');
+
+        Route::post('siswa/import', 'import')->name('siswa.import');
+        // routes/web.php
+        Route::get('show/{id}/print','print')->name('siswa.print');
     });
     // =======================================================================================================
 
@@ -138,8 +142,6 @@ Route::middleware('auth')->group(function () {
         Route::get('', 'index')->name('bukuharian');
         Route::get('create', 'create')->name('bukuharian.create');
         Route::post('store', 'store')->name('bukuharian.store');
-        Route::get('createkodebukuharian', 'createkodebukuharian')->name('bukuharian.createkodebukuharian');
-        Route::post('createkodebukuharianstore', 'createkodebukuharianstore')->name('bukuharian.createkodebukuharianstore');
         Route::get('show/{id}', 'show')->name('bukuharian.show');
         Route::get('edit/{id}', 'edit')->name('bukuharian.edit');
         Route::put('edit/{id}', 'update')->name('bukuharian.update');
@@ -165,7 +167,7 @@ Route::middleware('auth')->group(function () {
         Route::get('', 'index')->name('pengembalian');
         Route::get('pdf', 'view_pdf')->name('pengembalian.pdf');
         Route::delete('destroy/{id}', 'destroy')->name('pengembalian.destroy');
-        Route::get('status/{id}', 'status')->name('pengembalian.status');
+        Route::put('status/{id}', 'status')->name('pengembalian.status');
     });
 
     Route::controller(SedangMeminjamController::class)->prefix('sedangmeminjam')->group(function () {
@@ -192,8 +194,6 @@ Route::middleware('auth')->group(function () {
         Route::get('', 'index')->name('peminjamantahunan');
         Route::get('create', 'create')->name('peminjamantahunan.create');
         Route::post('store', 'store')->name('peminjamantahunan.store');
-        Route::get('createbuku', 'createbuku')->name('peminjamantahunanbuku.create');
-        Route::post('storebuku', 'storebuku')->name('peminjamantahunanbuku.store');
         Route::get('show/{id}', 'show')->name('peminjamantahunan.show');
         Route::get('edit/{id}', 'edit')->name('peminjamantahunan.edit');
         Route::put('edit/{id}', 'update')->name('peminjamantahunan.update');
@@ -205,7 +205,7 @@ Route::middleware('auth')->group(function () {
         Route::get('pdf', 'view_pdf')->name('pengembaliantahunan.pdf');
         Route::get('', 'index')->name('pengembaliantahunan');
         Route::delete('destroy/{id}', 'destroy')->name('pengembaliantahunan.destroy');
-        Route::get('status/{id}', 'status')->name('pengembaliantahunan.status');
+        Route::put('status/{id}', 'status')->name('pengembaliantahunan.status');
     });
 
     Route::controller(SedangMeminjamTahunanController::class)->prefix('sedangmeminjamtahunan')->group(function () {

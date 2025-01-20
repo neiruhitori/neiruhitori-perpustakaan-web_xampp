@@ -1,32 +1,31 @@
 <head>
-    <!-- Modal -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
-    <!--Select2-->
+    <meta charset="UTF-8">
+    <title>Form Peminjaman Buku</title>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Untuk Kode Pinjam CSS -->
     <style>
-        .kode_pinjam {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
+        .message-center-top {
+            position: fixed;
+            left: 55%;
+            transform: translateX(-50%);
+            z-index: 100;
+            width: 50%;
+            text-align: center;
         }
 
-        .kode_pinjam label {
-            width: 100px;
-            /* Sesuaikan dengan kebutuhan */
-            margin-right: 10px;
+        .error {
+            color: red;
+            font-size: 0.875em;
         }
 
-        .kode_pinjam input {
-            flex: 1;
-        }
-
-        .kode_pinjam button {
-            margin-left: 110px;
-            /* Sesuaikan dengan lebar label */
+        .book-row {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -47,7 +46,7 @@
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="/dashboard">Beranda</a></li>
-                            <li class="breadcrumb-item active"><a href="/peminjamantahunan">Peminjaman</a></li>
+                            <li class="breadcrumb-item active"><a href="/peminjamantahunan">Peminjaman Tahunan</a></li>
                             <li class="breadcrumb-item active">Buat</li>
                         </ol>
                     </div><!-- /.col -->
@@ -55,226 +54,238 @@
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content-header -->
-        <form method="post" enctype="multipart/form-data" id="profile_setup_frm"
-            action="{{ route('peminjamantahunan.store') }}">
+        <form id="peminjamanForm" method="post" action="{{ route('peminjamantahunan.store') }}">
             @csrf
             <div class="row">
-                <div class="col-md-12 border-right">
-                    <div class="p-3 py-5">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="text-right">Buat Peminjaman Tahunan</h4>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Form Peminjaman Buku Tahunan</h3>
                         </div>
-                        <label>Kode Pinjam :</label>
-                        <br>
-                        <div class="kode_pinjam">
-                            @error('kls')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            <select id="kls" name="kls" class="form-control col-md-2">
-                                <option selected disabled>Pilih Kelas</option>
-                                <option>VIIA</option>
-                                <option>VIIB</option>
-                                <option>VIIC</option>
-                                <option>VIID</option>
-                                <option>VIIE</option>
-                                <option>VIIF</option>
-                                <option>VIIG</option>
-                                <option>VIIIA</option>
-                                <option>VIIIB</option>
-                                <option>VIIIC</option>
-                                <option>VIIID</option>
-                                <option>VIIIE</option>
-                                <option>VIIIF</option>
-                                <option>VIIIG</option>
-                                <option>IXA</option>
-                                <option>IXB</option>
-                                <option>IXC</option>
-                                <option>IXD</option>
-                                <option>IXE</option>
-                                <option>IXF</option>
-                                <option>IXG</option>
-                            </select>
-                            @error('absen')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            <input type="text" class="form-control col-md-2" id="absen" name="absen"
-                                placeholder="No Absen" autocomplete="off"/>
-                            @error('tgl')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            <input type="date" class="form-control col-md-2" id="tgl" name="tgl" autocomplete="off"/>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label for="inputStatus">Nama :</label>
-                                @error('siswas_id')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                                <select id="peminjamantahunan_name" name="siswas_id" class="form-control">
-                                    <option selected disabled>Pilih Siswa</option>
-                                    @foreach ($siswa as $sw)
-                                        <option value="{{ $sw->id }}">{{ $sw->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            {{-- <div class="col-md-6">
-                                <label for="inputStatus">Kelas :</label>
-                                @error('kelas')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                                <select id="kelas" name="kelas" class="form-control">
-                                    <option selected disabled>Pilih Kelas</option>
-                                    <option>VII A</option>
-                                    <option>VII B</option>
-                                    <option>VII C</option>
-                                    <option>VII D</option>
-                                    <option>VII E</option>
-                                    <option>VII F</option>
-                                    <option>VII G</option>
-                                    <option>VIII A</option>
-                                    <option>VIII B</option>
-                                    <option>VIII C</option>
-                                    <option>VIII D</option>
-                                    <option>VIII E</option>
-                                    <option>VIII F</option>
-                                    <option>VIII G</option>
-                                    <option>IX A</option>
-                                    <option>IX B</option>
-                                    <option>IX C</option>
-                                    <option>IX D</option>
-                                    <option>IX E</option>
-                                    <option>IX F</option>
-                                    <option>IX G</option>
-                                </select>
-                            </div> --}}
-                            <!-- Date and time -->
-                            <div class="form-group col-md-2">
-                                <label>Tanggal Pinjam :</label>
-                                @error('jam_pinjam')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                                <div class="input-group date" id="reservationdatetime" data-target-input="nearest">
-                                    <input type="date" name="jam_pinjam" class="form-control datetimepicker-input"
-                                        data-target="#reservationdatetime" autocomplete="off"/>
-                                    <div class="input-group-append" data-target="#reservationdatetime"
-                                        data-toggle="datetimepicker">
+                        <div class="card-body">
+                            <!-- Informasi Peminjam -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Siswa</label>
+                                        <select name="siswas_id" class="form-control select2" required>
+                                            <option value="">Pilih Siswa</option>
+                                            @foreach ($siswa as $s)
+                                                <option value="{{ $s->id }}" data-nisn="{{ $s->nisn }}"
+                                                    data-kelas="{{ $s->kelas }}">
+                                                    {{ $s->nisn }} - {{ $s->name }} - {{ $s->kelas }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
-                            <!-- /.form group -->
-                            <!-- Date and time -->
-                            <div class="form-group col-md-2">
-                                <label>Tanggal Kembali :</label>
-                                @error('jam_kembali')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                                <div class="input-group date" id="reservationdatetime" data-target-input="nearest">
-                                    <input type="date" name="jam_kembali" class="form-control datetimepicker-input"
-                                        data-target="#reservationdatetime" autocomplete="off"/>
-                                    <div class="input-group-append" data-target="#reservationdatetime"
-                                        data-toggle="datetimepicker">
+
+                            <!-- Periode Peminjaman -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Tanggal Mulai</label>
+                                        <input type="date" name="jam_pinjam" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Tanggal Kembali</label>
+                                        <input type="date" name="jam_kembali" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
-                            {{-- <div class="input-group mb-3"  id="table">
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <th>Buku</th>
-                                        <th>Kode Buku</th>
-                                        <th>Jumlah Buku</th>
-                                        <th>Action</th>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="buku[]" id="buku" class="form-control"
-                                                placeholder="Masukkan Nama Buku"></td>
-                                        <td><input type="text" class="form-control" id="kodebuku" name="kodebuku[]"
-                                                placeholder=" Masukkan Kode Buku" /></td>
-                                        <td><input type="text" class="form-control" id="jml_buku" name="jml_buku[]"
-                                                placeholder=" Masukkan Jumlah Buku yang di Pinjam" /></td>
-                                        <td><button class="btn btn-success add_buku" type="button" name="add"
-                                                id="add">Add More</button></td>
-                                    </tr>
-                                </table>
-                            </div> --}}
-                            <!-- /.form group -->
-                            {{-- <div class="col-md-6">
-                                <label>Description :</label>
-                                @error('description')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                                <textarea type="text" class="form-control" id="description" name="description"
-                                    placeholder="Silahkan Masukkan Deskripsi Peminjaman"></textarea>
-                            </div> --}}
-                            <div class="col-md-6">
-                                <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#exampleModal">
-                                    Buat Pinjaman
-                                </button>
 
-                                <!-- Modal -->
-                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Konfirmasi Pinjaman</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
+                            <!-- Daftar Buku -->
+                            <div class="book-list">
+                                <h4>Daftar Buku</h4>
+                                <div class="book-row">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Buku</label>
+                                                <select name="bukucruds_id[]" class="form-control select2-books" required>
+                                                    <option value="">Pilih Buku</option>
+                                                    @foreach ($bukucrud as $buk)
+                                                        <option value="{{ $buk->id }}" data-stok="{{ $buk->stok }}">
+                                                            {{ $buk->buku }} (Stok: {{ $buk->stok }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                            <div class="modal-body">
-                                                Pastikan data pinjaman sudah benar!
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Kode Buku</label>
+                                                <select name="kodebuku[]" class="form-control select2-books" required>
+                                                    <option value="">Pilih Kode Buku</option>
+                                                    @foreach ($bukucrud as $buku)
+                                                        @foreach ($buku->kodebukucruds as $kode)
+                                                            <option value="{{ $kode->kodebuku }}">{{ $buku->buku }}
+                                                                -
+                                                                {{ $kode->kodebuku }}</option>
+                                                        @endforeach
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Batal
-                                                </button>
-
-                                                <button id="btn" class="btn btn-primary profile-button"
-                                                    type="submit">
-                                                    Buat
-                                                </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Jumlah</label>
+                                                <input type="number" name="jml_buku[]" class="form-control" min="1"
+                                                    required>
                                             </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-success add-book"
+                                                style="margin-top: 32px">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Simpan Peminjaman</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </form>
-        {{-- untuk Multiple Insert --}}
-        {{-- <script>
-            const add = document.querySelectorAll(".input-group .add_buku")
-            add.forEach(function(e) {
-                e.addEventListener('click', function() {
-                    let element = this.parentElement
-                    // console.log(element);
-                    let newElement = document.createElement('div')
-                    newElement.classList.add('input-group', 'mb-3')
-                    newElement.innerHTML = `
-                <tr>
-                    <td><input type="text" name="buku[]" id="buku" class="form-control" placeholder="Masukkan Nama Buku"></td>
-                    <td><input type="text" class="form-control" id="kodebuku" name="kodebuku[]" placeholder=" Masukkan Kode Buku" /></td>
-                    <td><input type="text" class="form-control" id="jml_buku" name="jml_buku[]" placeholder=" Masukkan Jumlah Buku yang di Pinjam" /></td>
-                    <td><button class="btn btn-danger remove_buku" type="button" name="add" id="add">Remove</button></td>
-                </tr>`
-                    document.getElementById('table').appendChild(newElement)
-                    callEvent()
-                })
-            })
-            callEvent()
+    </div>
 
-            function callEvent() {
-                // Dibawah ini adalah untuk Hapus Input yang ditambahkan
-                document.querySelector('div').querySelectorAll('.remove_buku').forEach(function(remove) {
-                    remove.addEventListener('click', function(elmClick) {
-                        elmClick.target.parentElement.remove()
-                    })
-                })
-            }
-        </script> --}}
-    @endsection
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2 for student selection with proper event handling
+            $('select[name="siswas_id"]').select2({
+                placeholder: 'Pilih Siswa',
+                allowClear: true
+            });
+
+            // Inisialisasi Select2 untuk buku
+            $('.select2-books').select2();
+
+            // Load kode buku when book is selected
+            $(document).on('change', 'select[name="bukucruds_id[]"]', function() {
+                const bookId = $(this).val();
+                const kodebukuSelect = $(this).closest('.row').find('select[name="kodebuku[]"]');
+                const jmlInput = $(this).closest('.row').find('input[name="jml_buku[]"]');
+                const maxStok = $(this).find(':selected').data('stok');
+
+                jmlInput.attr('max', maxStok);
+
+                if (bookId) {
+                    $.get(`/api/buku/${bookId}/kode`, function(data) {
+                        kodebukuSelect.empty();
+                        kodebukuSelect.append('<option value="">Pilih Kode Buku</option>');
+                        data.forEach(function(item) {
+                            kodebukuSelect.append(
+                                `<option value="${item.kodebuku}">${item.kodebuku}</option>`
+                            );
+                        });
+                    });
+                }
+            });
+
+            // Add more books
+            $('.add-book').click(function() {
+                // Clone row tanpa events
+                const newRow = $('.book-row').first().clone(false);
+
+                // Hapus Select2 dari elemen yang di-clone
+                newRow.find('select').each(function() {
+                    if ($(this).data('select2')) {
+                        $(this).select2('destroy');
+                    }
+                    $(this).removeClass('select2-hidden-accessible')
+                        .find('option').removeAttr('data-select2-id')
+                        .end()
+                        .removeAttr('data-select2-id')
+                        .val('');
+                });
+
+                // Bersihkan input
+                newRow.find('input').val('');
+
+                // Hapus semua elemen Select2 yang tersisa
+                newRow.find('.select2-container').remove();
+
+                // Tambah tombol remove
+                const removeBtn = $(`
+            <button type="button" class="btn btn-danger remove-book" style="margin-top: 32px">
+                <i class="fas fa-minus"></i>
+            </button>
+        `);
+                newRow.find('.btn').replaceWith(removeBtn);
+
+                // Tambahkan row baru
+                $('.book-list').append(newRow);
+
+                // Inisialisasi ulang Select2 pada row baru
+                newRow.find('.select2-books').select2({
+                    width: '100%',
+                    dropdownParent: newRow
+                });
+            });
+
+            // Remove book row
+            $(document).on('click', '.remove-book', function() {
+                const row = $(this).closest('.book-row');
+                row.find('select').each(function() {
+                    if ($(this).data('select2')) {
+                        $(this).select2('destroy');
+                    }
+                });
+                row.remove();
+            });
+
+            // Form validation
+            let isSubmitting = false;
+
+            $('#peminjamanForm').submit(function(e) {
+                if (isSubmitting) return;
+                e.preventDefault();
+                $('#confirmationModal').modal('show');
+            });
+
+            $('#confirmSubmit').on('click', function() {
+                isSubmitting = true;
+                $('#confirmationModal').modal('hide');
+                setTimeout(function() {
+                    $('#peminjamanForm')[0].submit();
+                }, 500);
+            });
+
+            // Modal cleanup
+            $('#confirmationModal').on('hidden.bs.modal', function() {
+                isSubmitting = false;
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            });
+        });
+    </script>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Konfirmasi Peminjaman</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Pastikan semua data peminjaman sudah benar!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="confirmSubmit">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

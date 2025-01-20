@@ -27,6 +27,8 @@ class PeminjamanController extends Controller
                 $query->where('name', 'like', '%' . $keyword . '%');
             })->orWhereHas('siswas', function ($query) use ($keyword) {
                 $query->where('kelas', 'like', '%' . $keyword . '%');
+            })->orWhereHas('siswas', function ($query) use ($keyword) {
+                $query->where('nisn', 'like', '%' . $keyword . '%');
             })->get();
         } else {
             $peminjaman = Peminjaman::latest()->paginate(35);
@@ -134,39 +136,69 @@ class PeminjamanController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, string $id)
-{
-    // Ambil data peminjaman sebelum update
-    $peminjaman = Peminjaman::findOrFail($id);
-    $bukuharian = Bukusharian::findOrFail($peminjaman->bukusharians_id);
+    {
+        try {
+            // Log the incoming request data
+            // \Log::info("Update Request Data:', $request->all()");
 
-    // Hitung selisih stok
-    $stokLama = $peminjaman->jml_buku;
-    $stokBaru = $request->input('jml_buku');
-    $selisih = $stokLama - $stokBaru;
+            // Validate the request
+            $validated = $request->validate([
+                'siswas_id' => 'required',
+                'bukusharians_id' => 'required',
+                'kodebuku' => 'required',
+                'jml_buku' => 'required|numeric|min:1',
+                'jam_pinjam' => 'required',
+                'jam_kembali' => 'required|after:jam_pinjam'
+            ]);
 
-    // Update stok sesuai perubahan jumlah buku
-    if ($selisih > 0) {
-        // Tambah stok (berkurang jumlah buku dipinjam)
-        $bukuharian->stok += $selisih;
-    } elseif ($selisih < 0) {
-        // Kurangi stok (bertambah jumlah buku dipinjam)
-        $bukuharian->stok += $selisih; // selisih negatif
+            // Find the peminjaman
+            $peminjaman = Peminjaman::findOrFail($id);
+
+            // Find the bukuharian
+            $bukuharian = Bukusharian::findOrFail($request->bukusharians_id);
+
+            // Calculate stock difference
+            $stokLama = $peminjaman->jml_buku;
+            $stokBaru = $request->input('jml_buku');
+            $selisih = $stokLama - $stokBaru;
+
+            // Update stock
+            $bukuharian->stok += $selisih;
+
+            // Check if stock would go negative
+            if ($bukuharian->stok < 0) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['error' => 'Stok buku tidak mencukupi.']);
+            }
+
+            // Save bukuharian changes
+            $bukuharian->save();
+
+            // Update peminjaman
+            $updateResult = $peminjaman->update([
+                'siswas_id' => $request->siswas_id,
+                'bukusharians_id' => $request->bukusharians_id,
+                'kodebuku' => $request->kodebuku,
+                'jml_buku' => $stokBaru,
+                'jam_pinjam' => $request->jam_pinjam,
+                'jam_kembali' => $request->jam_kembali
+            ]);
+
+            // \Log::info('Update Result:', ['success' => $updateResult]);
+
+            if (!$updateResult) {
+                throw new \Exception('Failed to update peminjaman');
+            }
+
+            return redirect()->route('peminjaman')->with('success', 'Peminjaman berhasil diupdate');
+        } catch (\Exception $e) {
+            // \Log::error('Error updating peminjaman: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
-
-    // Pastikan stok tidak negatif
-    if ($bukuharian->stok < 0) {
-        return redirect()->back()->withErrors(['error' => 'Stok buku tidak mencukupi.']);
-    }
-
-    // Simpan update pada stok buku
-    $bukuharian->save();
-
-    // Update data peminjaman dengan jumlah buku baru
-    $peminjaman->jml_buku = $stokBaru;
-    $peminjaman->save();
-
-    return redirect()->route('peminjaman')->with('success', 'Peminjaman updated successfully');
-}
 
 
     /**

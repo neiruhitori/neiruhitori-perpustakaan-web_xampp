@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Peminjaman;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class PengembalianController extends Controller
@@ -104,25 +105,63 @@ class PengembalianController extends Controller
         // 
     }
 
+    // public function status($id)
+    // {
+    //     // Temukan peminjaman berdasarkan ID
+    //     $pengembalian = Peminjaman::findOrFail($id);
+
+    //     // Temukan buku berdasarkan ID peminjaman
+    //     $bukuharian = Bukusharian::findOrFail($pengembalian->bukusharians_id);
+
+    //     // Tambah stok buku berdasarkan jumlah buku yang dipinjam
+    //     $bukuharian->stok += $pengembalian->jml_buku;
+    //     $bukuharian->save();
+
+    //     // Update status peminjaman menjadi selesai (0)
+    //     $pengembalian->update([
+    //         'status' => 0
+    //     ]);
+
+    //     // Redirect ke halaman pengembalian dengan pesan sukses
+    //     return redirect()->route('pengembalian', compact('pengembalian'))->with('success', 'Peminjaman selesai successfully');
+    // }
+
     public function status($id)
     {
         // Temukan peminjaman berdasarkan ID
         $pengembalian = Peminjaman::findOrFail($id);
 
-        // Temukan buku berdasarkan ID peminjaman
-        $bukuharian = Bukusharian::findOrFail($pengembalian->bukusharians_id);
+        // Hitung keterlambatan
+        $tglKembali = Carbon::parse($pengembalian->jam_kembali);
+        $today = Carbon::now();
+        $isOverdue = $today->gt($tglKembali);
+        $lateDays = $isOverdue ? $today->diffInDays($tglKembali) : 0;
+        $lateFine = $lateDays * 500;
 
-        // Tambah stok buku berdasarkan jumlah buku yang dipinjam
+        // Update stok buku
+        $bukuharian = Bukusharian::findOrFail($pengembalian->bukusharians_id);
         $bukuharian->stok += $pengembalian->jml_buku;
         $bukuharian->save();
 
-        // Update status peminjaman menjadi selesai (0)
+        // Siapkan deskripsi denda jika ada
+        $description = '';
+        if ($lateDays > 0) {
+            $description = "Denda keterlambatan {$lateDays} hari: Rp " . number_format($lateFine, 0, ',', '.');
+        }
+        if (request()->has('is_damaged')) {
+            $damageFine = 50000;
+            $description .= ($description ? "\n" : "") . "Denda kerusakan/kehilangan buku: Rp " . number_format($damageFine, 0, ',', '.');
+            $lateFine += $damageFine;
+        }
+
+        // Update status peminjaman
         $pengembalian->update([
-            'status' => 0
+            'status' => 0,
+            'description' => $description ?: null
         ]);
 
-        // Redirect ke halaman pengembalian dengan pesan sukses
-        return redirect()->route('pengembalian', compact('pengembalian'))->with('success', 'Peminjaman selesai successfully');
+        return redirect()->route('pengembalian')
+            ->with('success', 'Pengembalian berhasil diproses' . ($lateFine > 0 ? ". Total denda: Rp " . number_format($lateFine, 0, ',', '.') : ''));
     }
 
 

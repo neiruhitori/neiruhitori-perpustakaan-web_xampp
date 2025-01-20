@@ -40,6 +40,14 @@
                         <div class="row" id="res"></div>
                         <div class="row mt-2">
                             <div class="col-md-6">
+                                <label>NISN :</label>
+                                @error('nisn')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                                <input type="text" class="form-control" name="nisn"
+                                    placeholder=" Masukkan NISN Siswa" autocomplete="off"/>
+                            </div>
+                            <div class="col-md-6">
                                 <label>Nama :</label>
                                 @error('name')
                                     <div class="alert alert-danger">{{ $message }}</div>
