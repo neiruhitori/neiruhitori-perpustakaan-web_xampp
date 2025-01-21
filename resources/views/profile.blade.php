@@ -34,21 +34,41 @@
             <div class="row">
                 <div class="col-md-12 border-right">
                     <div class="p-3 py-5">
+                        <!-- /.content-header -->
+                        <div class="alert">
+                            @if (session('success'))
+                                <div class="btn btn-success swalDefaultSuccess" role="alert">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+
+                            @if (session('error'))
+                                <div class="btn btn-danger swalDefaultSuccess" role="alert">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
+
+                            @if ($errors->any())
+                                <div class="btn btn-danger swalDefaultSuccess" role="alert">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="text-right">Profile Settings</h4>
                         </div>
-                        @if (Session::has('success'))
-                            <div class="btn btn-success toastrDefaultSuccess" role="alert">
-                                {{ Session::get('success') }}
-                            </div>
-                        @endif
                         <div class="row" id="res"></div>
                         <div class="row mt-2">
 
                             <div class="col-md-6">
                                 <label class="labels">ID Perpustakaan</label>
-                                <input type="text" name="perpustakaan_id" disabled class="form-control" placeholder="ID Perpustakaan"
-                                    value="{{ auth()->user()->perpustakaan_id }}" autocomplete="off">
+                                <input type="text" name="perpustakaan_id" disabled class="form-control"
+                                    placeholder="ID Perpustakaan" value="{{ auth()->user()->perpustakaan_id }}"
+                                    autocomplete="off">
                             </div>
                             <div class="col-md-6">
                                 <label class="labels">NIP</label>
@@ -63,7 +83,8 @@
                             <div class="col-md-6">
                                 <label class="labels">Email</label>
                                 <input type="text" name="email" class="form-control"
-                                    value="{{ auth()->user()->email }}" placeholder="Email tidak wajib diisi" autocomplete="off">
+                                    value="{{ auth()->user()->email }}" placeholder="Email tidak wajib diisi"
+                                    autocomplete="off">
                             </div>
                             {{-- <div class="col-md-6">
                                 <label for="photoProfile" class="">Tambah Foto Profile</label>
@@ -73,14 +94,7 @@
                                 </div>
                             </div> --}}
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label class="labels">Changes Password</label>
-                                <input type="password" name="password" class="form-control" value=""
-                                    placeholder="Password baru" id="MyPass" autocomplete="off">
-                                <input type="checkbox" onclick="ShowHidden()">Show Password
-                            </div>
-                        </div>
+
                         <center>
                             <p>Peringatan setiap Anda mengubah <b>Nama</b>, <b>Email</b> dan <b>Password</b>.<br>
                                 Anda perlu memasukan <b>Password lama</b> atau <b>Password baru</b> anda terlebih dahulu di
@@ -101,20 +115,35 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Simpan Perubahan?</h1>
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Konfirmasi Perubahan</h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            Apakah anda sudah memasukan <b>password</b> anda di <b>Changes Password</b>?
+                                            <div class="mb-3">
+                                                <label class="labels">Password Saat Ini</label>
+                                                <input type="password" name="current_password" class="form-control"
+                                                    placeholder="Masukkan password saat ini" id="currentPass" required>
+                                                <div class="form-text text-danger">* Wajib diisi untuk konfirmasi perubahan
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="labels">Password Baru (Optional)</label>
+                                                <input type="password" name="password" class="form-control"
+                                                    placeholder="Masukkan password baru" id="newPass">
+                                                <div class="form-text">Kosongkan jika tidak ingin mengubah password</div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <input type="checkbox" onclick="showPasswords()"> Show Passwords
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
                                                 data-bs-dismiss="modal">Close</button>
-
-                                            <button id="btn" class="btn btn-primary profile-button" type="submit">
-                                                Save Profile
-                                            </button>
+                                            <button id="btn" class="btn btn-primary profile-button"
+                                                type="submit">Save Profile</button>
                                         </div>
                                     </div>
                                 </div>
@@ -129,13 +158,29 @@
     </form>
 
     <script>
-        function ShowHidden() {
-            var x = document.getElementById("MyPass");
-            if (x.type === "password") {
-                x.type = "text";
+        function showPasswords() {
+            var currentPass = document.getElementById("currentPass");
+            var newPass = document.getElementById("newPass");
+
+            if (currentPass.type === "password") {
+                currentPass.type = "text";
+                newPass.type = "text";
             } else {
-                x.type = "password";
+                currentPass.type = "password";
+                newPass.type = "password";
             }
         }
+
+        // Otomatis menghilangkan alert setelah 5 detik
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    // Gunakan Bootstrap dismiss
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000); // 5000ms = 5 detik
+        });
     </script>
 @endsection

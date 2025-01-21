@@ -67,7 +67,7 @@
                                 <select id="peminjaman_name" name="siswas_id" class="form-control">
                                     <option selected disabled>Pilih Siswa</option>
                                     @foreach ($siswa as $sw)
-                                        <option value="{{ $sw->id }}">{{ $sw->name }}</option>
+                                        <option value="{{ $sw->id }}">{{ $sw->nisn }} - {{ $sw->name }} - {{ $sw->kelas }}</option>
                                     @endforeach
                                 </select>
                             </div>

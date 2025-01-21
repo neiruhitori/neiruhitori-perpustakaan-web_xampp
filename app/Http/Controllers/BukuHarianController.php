@@ -144,44 +144,51 @@ class BukuHarianController extends Controller
             'penulis' => 'required|min:1|max:50',
             'penerbit' => 'required|min:1|max:50',
             'stok' => 'required|integer',
-            'kodebuku' => 'required|array',  // Memastikan kodebuku adalah array
-            'kodebuku.*' => 'string|distinct',  // Memastikan tiap kodebuku adalah string dan unik
+            'kodebuku' => 'required|array',
+            'kodebuku.*' => 'string|distinct',
+            'foto' => 'image|mimes:jpeg,png,jpg,gif|max:2048' // Tambahkan validasi foto
         ]);
 
         // Temukan data Bukusharian berdasarkan ID
         $data = Bukusharian::findOrFail($id);
 
-        // Hanya update kolom-kolom yang ada di tabel bukusharians
-        $data->update([
-            'buku' => $request->buku,
-            'penulis' => $request->penulis,
-            'penerbit' => $request->penerbit,
-            'stok' => $request->stok,
-            'description' => $request->description,
-            // kolom lain yang relevan dari tabel bukusharians
-        ]);
-
         // Handle file upload untuk foto
         if ($request->hasFile('foto')) {
+            $foto = $request->file('foto');
+            $filename = time() . '.' . $foto->getClientOriginalExtension();
+
             // Hapus foto lama jika ada
             if ($data->foto && file_exists(public_path('gambarbukuharian/' . $data->foto))) {
                 unlink(public_path('gambarbukuharian/' . $data->foto));
             }
 
             // Simpan foto baru
-            $filename = $request->file('foto')->getClientOriginalName();
-            $request->file('foto')->move('gambarbukuharian/', $filename);
+            $foto->move(public_path('gambarbukuharian'), $filename);
+
+            // Update nama foto di database
             $data->foto = $filename;
         }
 
+        // Update data lainnya
+        $data->update([
+            'buku' => $request->buku,
+            'penulis' => $request->penulis,
+            'penerbit' => $request->penerbit,
+            'stok' => $request->stok,
+            'description' => $request->description,
+        ]);
+
         $data->save();
 
-        // Update kodebuku di KodebukuHarian
-        foreach ($request->kodebuku as $key => $kode) {
-            $kodebuku = KodebukuHarian::where('bukuharian_id', $id)->where('id', $key)->first();
-            if ($kodebuku) {
-                $kodebuku->kodebuku = $kode;
-                $kodebuku->save();
+        // Update kodebuku
+        KodebukuHarian::where('bukuharian_id', $id)->delete();
+
+        foreach ($request->kodebuku as $kode) {
+            if (!empty($kode)) {
+                KodebukuHarian::create([
+                    'bukuharian_id' => $id,
+                    'kodebuku' => $kode
+                ]);
             }
         }
 

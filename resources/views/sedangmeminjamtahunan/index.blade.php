@@ -67,7 +67,7 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <tr>
                         <th>No</th>
-                        <th>Kode Pinjam</th>
+                        <th>NISN</th>
                         <th>Nama</th>
                         <th>Kelas</th>
                         <th>Buku</th>
@@ -82,7 +82,7 @@
                             @forelse ($sedangmeminjamtahunan as $key => $k)
                                 <tr>
                                     <td scope="row">{{ $loop->iteration }}</td>
-                                    <td>{{ $k->kode_pinjam }}</td>
+                                    <td>{{ optional($k->siswas)->nisn }}</td>
                                     <td>{{ optional($k->siswas)->name }}</td>
                                     <td>{{ optional($k->siswas)->kelas }}</td>
                                     <td>

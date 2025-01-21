@@ -127,8 +127,6 @@ Route::middleware('auth')->group(function () {
         Route::get('', 'index')->name('buku');
         Route::get('create', 'create')->name('buku.create');
         Route::post('store', 'store')->name('buku.store');
-        Route::get('createkodebukutahunan', 'createkodebukutahunan')->name('buku.createkodebukutahunan');
-        Route::post('createkodebukutahunanstore', 'createkodebukutahunanstore')->name('buku.createkodebukutahunanstore');
         Route::get('show/{id}', 'show')->name('buku.show');
         Route::get('edit/{id}', 'edit')->name('buku.edit');
         Route::put('edit/{id}', 'update')->name('buku.update');

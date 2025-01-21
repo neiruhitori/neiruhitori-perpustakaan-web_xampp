@@ -1,3 +1,28 @@
+<head>
+    <style>
+        .message-center-top {
+            position: fixed;
+            left: 55%;
+            transform: translateX(-50%);
+            z-index: 100;
+            width: 50%;
+            text-align: center;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.875em;
+        }
+
+        .book-row {
+            justify-content-center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
 @extends('layouts.app')
 
 @section('title', 'Profile')
@@ -33,8 +58,8 @@
                         <div class="row" id="res"></div>
                         <div class="row mt-2">
                             <div class="col-md-6">
-                                <label>Kode Pinjam :</label>
-                                <input type="text" class="form-control" value="{{ $catatan->kode_pinjam }}" disabled />
+                                <label>NISN :</label>
+                                <input type="text" class="form-control" value="{{ $catatan->siswas->nisn }}" disabled />
                             </div>
                             <div class="col-md-6">
                                 <label>Nama :</label>
@@ -45,53 +70,73 @@
                                 <label>Kelas :</label>
                                 <input type="text" class="form-control" value="{{ $catatan->siswas->kelas }}" disabled />
                             </div>
-                            <div class="col-md-6">
-                                <label>Gambar :</label>
-                                <div>
-                                    @foreach ($catatan->bukus()->get() as $b)
-                                        <img src="{{ asset('gambarbukutahunan/' . $b->bukucruds->foto) }}" alt=""
-                                            style="width:50px;" class="form-control">
-                                    @endforeach
+                            <!-- Daftar Buku -->
+                            <!-- Ubah struktur div di bagian daftar buku -->
+                            <div class="container">
+                                <h4>Daftar Buku</h4>
+                                <div class="book-row">
+                                    <div class="row justify-content-center g-3">
+                                        <!-- Tambahkan justify-content-center dan g-3 untuk spacing -->
+                                        <div class="col-12 col-md-2"> <!-- Ubah ukuran kolom -->
+                                            <div class="form-group">
+                                                <label>Sampul :</label>
+                                                @foreach ($catatan->bukus()->get() as $b)
+                                                    <img src="{{ asset('gambarbukutahunan/' . $b->bukucruds->foto) }}"
+                                                        alt="" style="width:50px;" class="form-control">
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <div class="form-group">
+                                                <label>Buku :</label>
+                                                @foreach ($catatan->bukus()->get() as $b)
+                                                    <input type="text" class="form-control"
+                                                        value="{{ $b->bukucruds->buku }}" disabled />
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <div class="form-group">
+                                                <label>Penulis :</label>
+                                                @foreach ($catatan->bukus()->get() as $b)
+                                                    <input type="text" class="form-control"
+                                                        value="{{ $b->bukucruds->penulis }}" disabled />
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <div class="form-group">
+                                                <label>Penerbit :</label>
+                                                @foreach ($catatan->bukus()->get() as $b)
+                                                    <input type="text" class="form-control"
+                                                        value="{{ $b->bukucruds->penerbit }}" disabled />
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <div class="form-group">
+                                                <label>Kode Buku :</label>
+                                                @foreach ($catatan->bukus()->get() as $b)
+                                                    <input type="text" class="form-control" value="{{ $b->kodebuku }}"
+                                                        disabled />
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <div class="form-group">
+                                                <label>Jumlah Buku :</label>
+                                                @foreach ($catatan->bukus()->get() as $b)
+                                                    <input type="text" class="form-control" value="{{ $b->jml_buku }}"
+                                                        disabled />
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label>Buku :</label>
-                                @foreach ($catatan->bukus()->get() as $b)
-                                    <input type="text" class="form-control" value="{{ $b->bukucruds->buku }}" disabled />
-                                @endforeach
-                            </div>
-                            <div class="col-md-6">
-                                <label>Penulis :</label>
-                                @foreach ($catatan->bukus()->get() as $b)
-                                    <input type="text" class="form-control" value="{{ $b->bukucruds->penulis }}"
-                                        disabled />
-                                @endforeach
-                            </div>
-                            <div class="col-md-6">
-                                <label>Penerbit :</label>
-                                @foreach ($catatan->bukus()->get() as $b)
-                                    <input type="text" class="form-control" value="{{ $b->bukucruds->penerbit }}"
-                                        disabled />
-                                @endforeach
-                            </div>
-                            <div class="col-md-6">
                                 <label>Deskripsi :</label>
-                                @foreach ($catatan->bukus()->get() as $b)
-                                    <input type="text" class="form-control" value="{{ $b->bukucruds->description }}"
-                                        disabled />
-                                @endforeach
-                            </div>
-                            <div class="col-md-6">
-                                <label>Kode Buku :</label>
-                                @foreach ($catatan->bukus()->get() as $b)
-                                    <input type="text" class="form-control" value="{{ $b->kodebuku }}" disabled />
-                                @endforeach
-                            </div>
-                            <div class="col-md-6">
-                                <label>Jumlah Buku :</label>
-                                @foreach ($catatan->bukus()->get() as $b)
-                                    <input type="text" class="form-control" value="{{ $b->jml_buku }}" disabled />
-                                @endforeach
+                                <input type="text" class="form-control" value="{{ $catatan->description }}" disabled />
                             </div>
                             <!-- Date and time -->
                             <div class="form-group">
@@ -116,11 +161,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- /.form group -->
-                            {{-- <div class="col-md-6">
-                                <label>Description :</label>
-                                <textarea class="form-control" id="description" name="description" disabled>{{ $catatan->description }}</textarea>
-                            </div> --}}
                         </div>
                     </div>
 

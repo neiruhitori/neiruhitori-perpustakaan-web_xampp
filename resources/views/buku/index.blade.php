@@ -141,8 +141,6 @@
                     <div class="breadcrumb mb-3 float-sm-right" role="group" aria-label="Basic example">
                         <a href="{{ route('buku.create') }}" class="btn btn-success float-sm-right">Tambah
                             Buku</a>
-                        <a href="{{ route('buku.createkodebukutahunan') }}" class="btn btn-primary float-sm-right">Tambah
-                            Kode Buku</a>
                     </div>
                 </div><!-- /.container-fluid -->
             </div>

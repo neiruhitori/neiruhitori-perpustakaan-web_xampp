@@ -78,7 +78,7 @@
                     <table id="example1" class="table table-bordered table-striped">
                         <tr>
                             <th>No</th>
-                            <th>Kode Pinjam</th>
+                            <th>NISN</th>
                             <th>Nama</th>
                             <th>Kelas</th>
                             <th>Buku</th>
@@ -90,7 +90,7 @@
                             @forelse ($viiig as $key => $k)
                                 <tr>
                                     <td scope="row">{{ $loop->iteration }}</td>
-                                    <td>{{ $k->kode_pinjam }}</td>
+                                    <td align="left">{{ optional($k->siswas)->nisn }}</td>
                                     <td align="left">{{ optional($k->siswas)->name }}</td>
                                     <td align="center">{{ optional($k->siswas)->kelas }}</td>
                                     <td>

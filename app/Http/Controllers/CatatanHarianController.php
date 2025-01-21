@@ -14,24 +14,32 @@ class CatatanHarianController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index( Request $request)
+    public function index(Request $request)
     {
         $iduser = Auth::id();
-        $profile = User::where('id',$iduser)->first();
-        
+        $profile = User::where('id', $iduser)->first();
+
         $keyword = $request->input('search');
         if ($request->has('search')) {
             $catatan = Peminjaman::whereHas('siswas', function ($query) use ($keyword) {
                 $query->where('name', 'like', '%' . $keyword . '%');
             })->orWhereHas('siswas', function ($query) use ($keyword) {
                 $query->where('kelas', 'like', '%' . $keyword . '%');
-            })->get();
+            })
+                ->orderByRaw('CASE WHEN description IS NULL THEN 1 ELSE 0 END')  // Prioritaskan yang ada isi
+                ->orderBy('updated_at', 'desc')  // Yang terbaru update di atas
+                ->orderBy('description', 'asc')  // Kemudian urutkan berdasarkan description
+                ->get();
         } else {
-            $catatan = Peminjaman::latest()->paginate(35);
+            $catatan = Peminjaman::orderByRaw('CASE WHEN description IS NULL THEN 1 ELSE 0 END')
+                ->orderBy('updated_at', 'desc')
+                ->orderBy('description', 'asc')
+                ->paginate(35);
         }
+
         return view('catatanharian.catatan', compact('catatan', 'profile'));
     }
-    
+
     /**
      * Display the specified resource.
      *
@@ -41,8 +49,8 @@ class CatatanHarianController extends Controller
     public function show($id)
     {
         $iduser = Auth::id();
-        $profile = User::where('id',$iduser)->first();
-        
+        $profile = User::where('id', $iduser)->first();
+
         $catatan = Peminjaman::findOrFail($id);
         return view('catatanharian.show', compact('catatan', 'profile'));
     }
@@ -56,8 +64,8 @@ class CatatanHarianController extends Controller
     public function edit($id)
     {
         $iduser = Auth::id();
-        $profile = User::where('id',$iduser)->first();
-        
+        $profile = User::where('id', $iduser)->first();
+
         $catatan = Peminjaman::findOrFail($id);
         return view('catatanharian.edit', compact('catatan', 'profile'));
     }

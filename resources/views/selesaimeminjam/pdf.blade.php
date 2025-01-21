@@ -24,20 +24,39 @@
             border-collapse: collapse;
         }
 
-        .table-isi {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #f0f0f0;
-
-            /* dibawah adalah untuk garis td */
-            border: 1px solid #a3a3a3;
-        }
-
         th {
             /* padding: 10px; */
             border: 1px solid #a3a3a3;
             background-color: #898989;
         }
+
+        .table-isi {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #f0f0f0;
+            border: 1px solid #a3a3a3;
+            table-layout: fixed;
+            font-size: 12px;
+            /* Ukuran huruf diperkecil */
+        }
+
+        .table-isi th {
+            font-size: 12px;
+            /* Ukuran huruf untuk header */
+            padding: 6px;
+            /* Padding dikurangi sedikit */
+        }
+
+        .table-isi td {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            border: 1px solid #a3a3a3;
+            /* padding: 6px; */
+            /* Padding dikurangi sedikit */
+        }
+
+        /* Status */
     </style>
 </head>
 
@@ -71,6 +90,7 @@
 
                                 <tr>
                                     <th>No</th>
+                                    <th>NISN</th>
                                     <th>Nama</th>
                                     <th>Kelas</th>
                                     <th>Buku</th>
@@ -82,23 +102,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                    @forelse ($selesaimeminjam as $k)
-                                        <tr>
-                                            <td scope="row" align=center>{{ $loop->iteration }}</td>
-                                            <td align="left">{{ optional($k->siswas)->name }}</td>
-                                            <td align="center">{{ optional($k->siswas)->kelas }}</td>
-                                            <td align="center">{{ optional($k->bukusharians)->buku }}</td>
-                                            <td align=center>{{ $k->jml_buku }}</td>
-                                            <td align=center>{{ $k->kodebuku }}</td>
-                                            <td align=center>{{ $k->jam_pinjam }}</td>
-                                            <td align=center>{{ $k->jam_kembali }}</td>
-                                            <td align=center>
-                                                <label
-                                                    class="label {{ $k->status == 1 ? 'label-danger' : 'label-success' }}">{{ $k->status == 1 ? 'Sedang Meminjam' : 'Selesai' }}</label>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                    @endforelse
+                                @forelse ($selesaimeminjam as $k)
+                                    <tr>
+                                        <td scope="row" align=center>{{ $loop->iteration }}</td>
+                                        <td align="left">{{ optional($k->siswas)->nisn }}</td>
+                                        <td align="left">{{ optional($k->siswas)->name }}</td>
+                                        <td align="center">{{ optional($k->siswas)->kelas }}</td>
+                                        <td align="center">{{ optional($k->bukusharians)->buku }}</td>
+                                        <td align=center>{{ $k->jml_buku }}</td>
+                                        <td align=left>{{ $k->kodebuku }}</td>
+                                        <td align=center>{{ $k->jam_pinjam }}</td>
+                                        <td align=center>{{ $k->jam_kembali }}</td>
+                                        <td align=center>
+                                            <label
+                                                class="label {{ $k->status == 1 ? 'label-danger' : 'label-success' }}">{{ $k->status == 1 ? 'Sedang Meminjam' : 'Selesai' }}</label>
+                                        </td>
+                                    </tr>
+                                @empty
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

@@ -33,6 +33,11 @@
                         <div class="row" id="res"></div>
                         <div class="row mt-2">
                             <div class="col-md-6">
+                                <label>NISN :</label>
+                                    <input type="text" class="form-control"
+                                        value="{{ $catatan->siswas->nisn }}" disabled />
+                            </div>
+                            <div class="col-md-6">
                                 <label>Nama :</label>
                                     <input type="text" class="form-control"
                                         value="{{ $catatan->siswas->name }}" disabled />
@@ -44,7 +49,7 @@
                                         value="{{ $catatan->siswas->kelas }}" disabled />
                             </div>
                             <div class="col-md-6">
-                                <label>Gambar :</label>
+                                <label>Sampul :</label>
                                 <div>
                                     <img src="{{ asset('gambarbukuharian/' . $catatan->bukusharians->foto) }}" alt="" style="width:200px;">
                                 </div>
@@ -64,7 +69,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label>Deskripsi :</label>
-                                <textarea type="text" class="form-control" disabled>{{ $catatan->bukusharians->description }}</textarea>
+                                <textarea type="text" class="form-control" disabled>{{ $catatan->description }}</textarea>
                             </div>
                             <div class="col-md-6">
                                 <label>Kode Buku :</label>

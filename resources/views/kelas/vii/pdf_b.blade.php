@@ -24,19 +24,36 @@
             border-collapse: collapse;
         }
 
-        .table-isi {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #f0f0f0;
-
-            /* dibawah adalah untuk garis td */
-            border: 1px solid #a3a3a3;
-        }
-
         th {
             /* padding: 10px; */
             border: 1px solid #a3a3a3;
             background-color: #898989;
+        }
+
+        .table-isi {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #f0f0f0;
+            border: 1px solid #a3a3a3;
+            table-layout: fixed;
+            font-size: 12px;
+            /* Ukuran huruf diperkecil */
+        }
+
+        .table-isi th {
+            font-size: 12px;
+            /* Ukuran huruf untuk header */
+            padding: 6px;
+            /* Padding dikurangi sedikit */
+        }
+
+        .table-isi td {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            border: 1px solid #a3a3a3;
+            /* padding: 6px; */
+            /* Padding dikurangi sedikit */
         }
     </style>
 </head>
@@ -71,7 +88,7 @@
 
                                 <tr>
                                     <th>No</th>
-                                    <th>Kode Pinjam</th>
+                                    <th>NISN</th>
                                     <th>Nama</th>
                                     <th>Kelas</th>
                                     <th>Buku</th>
@@ -83,7 +100,7 @@
                                 @forelse ($viib as $a)
                                     <tr>
                                         <td scope="row" align=center>{{ $loop->iteration }}</td>
-                                        <td>{{ $a->kode_pinjam }}</td>
+                                        <td align="left">{{ optional($a->siswas)->nisn }}</td>
                                         <td align="left">{{ optional($a->siswas)->name }}</td>
                                         <td align="center">{{ optional($a->siswas)->kelas }}</td>
                                         <td>
