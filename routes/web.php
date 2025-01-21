@@ -83,7 +83,7 @@ Route::controller(UntukSiswaController::class)->prefix('untuksiswa')->group(func
 //     })->middleware('auth');
 /*------------------------------------------------------------------------------------------------------ */
 
-// Route Login ====================================================================
+// Route Login P====================================================================
 Route::controller(AuthController::class)->group(function () {
     Route::get('register', 'register')->name('register');
     Route::post('register', 'registerSave')->name('register.save');
