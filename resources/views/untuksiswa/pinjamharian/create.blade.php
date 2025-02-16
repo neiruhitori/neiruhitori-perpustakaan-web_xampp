@@ -29,10 +29,6 @@
     <!-- Template Stylesheet -->
     <link href="{{ asset('environs-1.0.0/css/style.css') }}" rel="stylesheet">
 
-    <!-- Modal -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
     <!--Select2-->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
@@ -95,7 +91,8 @@
                                             <select id="peminjaman_name" name="siswas_id" class="form-control">
                                                 <option selected disabled>Pilih Siswa</option>
                                                 @foreach ($siswa as $sw)
-                                                    <option value="{{ $sw->id }}">{{ $sw->name }}</option>
+                                                    <option value="{{ $sw->id }}">{{ $sw->nisn }} -
+                                                        {{ $sw->name }} - {{ $sw->kelas }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -109,7 +106,8 @@
                                                 @foreach ($bukuharian as $sw)
                                                     <option value="{{ $sw->id }}"
                                                         @if ($sw->stok <= 0) disabled @endif>
-                                                        {{ $sw->buku }} @if ($sw->stok <= 0)
+                                                        {{ $sw->buku }}
+                                                        @if ($sw->stok <= 0)
                                                             (Stok Habis)
                                                         @endif
                                                     </option>
@@ -121,8 +119,15 @@
                                             @error('kodebuku')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
-                                            <input type="text" class="form-control" id="kodebuku" name="kodebuku"
-                                                placeholder=" Masukkan Nama Kode Buku" autocomplete="off" />
+                                            <select id="kodebuku" name="kodebuku" class="form-control">
+                                                <option selected disabled>Pilih Kode Buku</option>
+                                                @foreach ($bukuharian as $buku)
+                                                    @foreach ($buku->kodebukuharians as $kode)
+                                                        <option value="{{ $kode->kodebuku }}">{{ $buku->buku }} -
+                                                            {{ $kode->kodebuku }}</option>
+                                                    @endforeach
+                                                @endforeach
+                                            </select>
                                         </div>
                                         <div class="col-md-6">
                                             <label>Jumlah Buku :</label>
@@ -220,5 +225,9 @@
         @include('untuksiswa.js')
 
 </body>
+    <!-- Modal -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
 
 </html>

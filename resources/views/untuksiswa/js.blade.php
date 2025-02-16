@@ -61,3 +61,9 @@
 
             })
         </script>
+        <script>
+            $(document).ready(function() {
+                $('#kodebuku').select2()
+
+            })
+        </script>

@@ -33,10 +33,10 @@ use App\Http\Controllers\UntukSiswaController;
 */
 
 // Route root untuk mengarahkan ke halaman untuksiswa
-Route::get('/', [UntukSiswaController::class, 'index'], function () {
-    return redirect()->route('untuksiswa');
-});
-// Route untuk halaman untuksiswa
+// Route::get('/', [UntukSiswaController::class, 'index'], function () {
+//     return redirect()->route('untuksiswa');
+// });
+// // Route untuk halaman untuksiswa
 Route::controller(UntukSiswaController::class)->prefix('untuksiswa')->group(function () {
     Route::get('', 'index')->name('untuksiswa');
     // PEMINAJAMN HARIAN ==================================================================
@@ -74,13 +74,12 @@ Route::controller(UntukSiswaController::class)->prefix('untuksiswa')->group(func
     Route::get('daftarbukutahunansearch', 'daftarbukutahunansearch')->name('untuksiswa.daftarbuku.tahunan.search');
     Route::get('daftarbukutahunanlihat/{id}', 'daftarbukutahunanlihat')->name('untuksiswa.daftarbuku.tahunan.lihat');
     // ================================================================================================================
-
 });
 
 /* Dibawah ini adalah route langsung redirect ke dashboard jika sebelumnya belum logout */
-// Route::get('/', [HomeController::class, 'index'], function () {
-//         return view('dashboard');
-//     })->middleware('auth');
+Route::get('/', [HomeController::class, 'index'], function () {
+        return view('dashboard');
+    })->middleware('auth');
 /*------------------------------------------------------------------------------------------------------ */
 
 // Route Login P====================================================================

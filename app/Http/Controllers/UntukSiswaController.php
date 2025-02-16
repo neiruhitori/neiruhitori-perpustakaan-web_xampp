@@ -50,7 +50,7 @@ class UntukSiswaController extends Controller
     {
         $peminjaman = Peminjaman::all();
         $siswa = Siswa::all();
-        $bukuharian = Bukusharian::all();
+        $bukuharian = Bukusharian::with('kodebukuharians')->get();
         return view('untuksiswa.pinjamharian.create', compact('peminjaman', 'siswa', 'bukuharian'));
     }
 
@@ -82,7 +82,7 @@ class UntukSiswaController extends Controller
         Peminjaman::create([
             'siswas_id' => $request->siswas_id,
             'bukusharians_id' => $request->bukusharians_id,
-            'kodebuku' => $request->kodebuku,
+            'kodebuku' => json_encode($request->kodebuku), // Simpan kode buku dalam format JSON
             'jml_buku' => $request->jml_buku,
             'jam_pinjam' => $request->jam_pinjam,
             'jam_kembali' => $request->jam_kembali,
